@@ -1,0 +1,66 @@
+Superconductivty Data Data Set 
+Download: Data Folder, Data Set Description
+
+Abstract: Two file s contain data on 21263 superconductors and their relevant features.
+
+Data Set Characteristics:  
+
+Multivariate
+
+Number of Instances:
+
+21263
+
+Area:
+
+Physical
+
+Attribute Characteristics:
+
+Real
+
+Number of Attributes:
+
+81
+
+Date Donated
+
+2018-10-12
+
+Associated Tasks:
+
+Regression
+
+Missing Values?
+
+N/A
+
+Number of Web Hits:
+
+503
+
+
+Source:
+
+Kam Ham idieh, khamidieh '@' gmail.com, University of Pennsylvania, Statistics
+
+
+Data Set Information:
+
+There are two files: (1) train.csv contains 81 features extracted from 21263 superconductors along with the critical temperature in the 82nd column, (2) unique_m.csv contains the chemical formula broken up for all the 21263 superconductors from the train.csv file. The last two columns have the critical temperature and chemical formula. The original data comes from [Web Link] which is public. The goal here is to predict the critical temperature based on the features extracted.
+
+
+Attribute Information:
+
+Please see the relevant paper for the feature explanations.
+
+
+Relevant Papers:
+
+Hamidieh, Kam, A data-driven statistical model for predicting the critical temperature of a superconductor, Computational Materials Science, Volume 154, November 2018, Pages 346-354, [Web Link]
+
+
+
+Citation Request:
+
+Hamidieh, Kam, A data-driven statistical model for predicting the critical temperature of a superconductor, Computational Materials Science, Volume 154, November 2018, Pages 346-354, [Web Link]

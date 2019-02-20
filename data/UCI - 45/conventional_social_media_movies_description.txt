@@ -1,0 +1,72 @@
+CSM (Conventional and Social Media Movies) Dataset 2014 and 2015 Data Set 
+Download: Data Folder, Data Set Description
+
+Abstract: 12 features categorized as conventional and social media features. Both conventional features, collected from movies databases on Web as well as social media features(YouTube,Twitter).
+
+Data Set Characteristics:  
+
+Multivariate
+
+Number of Instances:
+
+217
+
+Area:
+
+Computer
+
+Attribute Characteristics:
+
+Integer
+
+Number of Attributes:
+
+12
+
+Date Donated
+
+2017-10-11
+
+Associated Tasks:
+
+Classification, Regression
+
+Missing Values?
+
+Yes
+
+Number of Web Hits:
+
+9973
+
+
+Source:
+
+Mehreen Ahmed 
+Department of Computer Software Engineering 
+National University of Sciences and Technology (NUST), 
+Islamabad, Pakistan 
+mahreenmcs '@' gmail.com
+
+
+Data Set Information:
+
+Year:2014 and 2015 
+Source: Twitter,YouTube,IMDB
+
+
+Attribute Information:
+
+Provide information about each attribute in your data set.
+
+
+Relevant Papers:
+
+Ahmed M, Jahangir M, Afzal H, Majeed A, Siddiqi I. Using Crowd-source based features from social media and Conventional features to predict the movies popularity. InSmart City/SocialCom/SustainCom (SmartCity), 2015 IEEE International Conference on 2015 Dec 19 (pp. 273-278). IEEE.
+
+
+
+Citation Request:
+
+Please cite this paper: 
+Ahmed M, Jahangir M, Afzal H, Majeed A, Siddiqi I. Using Crowd-source based features from social media and Conventional features to predict the movies popularity. InSmart City/SocialCom/SustainCom (SmartCity), 2015 IEEE International Conference on 2015 Dec 19 (pp. 273-278). IEEE.

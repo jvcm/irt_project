@@ -1,0 +1,168 @@
+Cargo 2000 Freight Tracking and Tracing Data Set 
+Download: Data Folder, Data Set Description
+
+Abstract: Sanitized and anonymized Cargo 2000 (C2K) airfreight tracking and tracing events, covering five months of business execution (3,942 process instances, 7,932 transport legs, 56,082 activities).
+
+Data Set Characteristics:  
+
+Multivariate, Sequential
+
+Number of Instances:
+
+3942
+
+Area:
+
+Business
+
+Attribute Characteristics:
+
+Integer
+
+Number of Attributes:
+
+98
+
+Date Donated
+
+2016-11-03
+
+Associated Tasks:
+
+Classification, Regression
+
+Missing Values?
+
+Yes
+
+Number of Web Hits:
+
+21479
+
+
+Source:
+
+Andreas Metzger (andreas.metzger '@' paluno.uni-due.de) 
+paluno (The Ruhr Institute for Software Technology) 
+University of Duisburg-Essen 
+Gerlingstraße 16 
+45127 Essen, Germany 
+
+
+Data Set Information:
+
+A description of the underlying Cargo 2000 standard and the processes reflected in the data set can be found at [Web Link].
+
+
+Attribute Information:
+
+nr - unique id for process instance of overall process - domain: [1…3942] 
+
+i1_legid - unique id across all transport legs (note: also to 'empty' legs are assigned an id) of incoming transport leg 1 - domain: [1..14664] 
+i1_rcs_p - planned duration (minutes) of incoming transport leg 1 (RCS: Freight Check in) - domain: [LONGINT] 
+i1_rcs_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (RCS: Freight Check in) - domain: [LONGINT] 
+i1_dep_1_p - planned duration (minutes) of incoming transport leg 1 (DEP: Departure Segment 1) - domain: [LONGINT] 
+i1_dep_1_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (DEP: Departure Segment 1) - domain: [LONGINT] 
+i1_dep_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 1 (DEP: Departure Segment 1) - domain: [100…816] 
+i1_rcf_1_p - planned duration (minutes) of incoming transport leg 1 (RCF: Arrival Segment 1) - domain: [LONGINT] 
+i1_rcf_1_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (RCF: Arrival Segment 1) - domain: [LONGINT] 
+i1_rcf_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 1 (RCF: Arrival Segment 1) - domain: [100…816] 
+i1_dep_2_p - planned duration (minutes) of incoming transport leg 1 (DEP: Departure Segment 2) - domain: [LONGINT] 
+i1_dep_2_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (DEP: Departure Segment 2) - domain: [LONGINT] 
+i1_dep_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 1 (DEP: Departure Segment 2) - domain: [100…816] 
+i1_rcf_2_p - planned duration (minutes) of incoming transport leg 1 (RCF: Arrival Segment 2) - domain: [LONGINT] 
+i1_rcf_2_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (RCF: Arrival Segment 2) - domain: [LONGINT] 
+i1_rcf_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 1 (RCF: Arrival Segment 2) - domain: [100…816] 
+i1_dep_3_p - planned duration (minutes) of incoming transport leg 1 (DEP: Departure Segment 3) - domain: [LONGINT] 
+i1_dep_3_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (DEP: Departure Segment 3) - domain: [LONGINT] 
+i1_dep_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 1 (DEP: Departure Segment 3) - domain: [100…816] 
+i1_rcf_3_p - planned duration (minutes) of incoming transport leg 1 (RCF: Arrival Segment 3) - domain: [LONGINT] 
+i1_rcf_3_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (RCF: Arrival Segment 3) - domain: [LONGINT] 
+i1_rcf_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 1 (RCF: Arrival Segment 3) - domain: [100…816] 
+i1_dlv_p - planned duration (minutes) of incoming transport leg 1 (DLV: Freight Delivery) - domain: [LONGINT] 
+i1_dlv_e - effective (i.e., actual) duration (minutes) of incoming transport leg 1 (DLV: Freight Delivery) - domain: [LONGINT] 
+i1_hops - number of segments (hops) in the transport leg of incoming transport leg 1 - domain: [1..4] 
+
+i2_legid - unique id across all transport legs (note: also to 'empty' legs are assigned an id) of incoming transport leg 2 - domain: [1..14664] 
+i2_rcs_p - planned duration (minutes) of incoming transport leg 2 (RCS: Freight Check in) - domain: [LONGINT] 
+i2_rcs_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (RCS: Freight Check in) - domain: [LONGINT] 
+i2_dep_1_p - planned duration (minutes) of incoming transport leg 2 (DEP: Departure Segment 1) - domain: [LONGINT] 
+i2_dep_1_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (DEP: Departure Segment 1) - domain: [LONGINT] 
+i2_dep_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 2 (DEP: Departure Segment 1) - domain: [100…816] 
+i2_rcf_1_p - planned duration (minutes) of incoming transport leg 2 (RCF: Arrival Segment 1) - domain: [LONGINT] 
+i2_rcf_1_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (RCF: Arrival Segment 1) - domain: [LONGINT] 
+i2_rcf_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 2 (RCF: Arrival Segment 1) - domain: [100…816] 
+i2_dep_2_p - planned duration (minutes) of incoming transport leg 2 (DEP: Departure Segment 2) - domain: [LONGINT] 
+i2_dep_2_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (DEP: Departure Segment 2) - domain: [LONGINT] 
+i2_dep_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 2 (DEP: Departure Segment 2) - domain: [100…816] 
+i2_rcf_2_p - planned duration (minutes) of incoming transport leg 2 (RCF: Arrival Segment 2) - domain: [LONGINT] 
+i2_rcf_2_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (RCF: Arrival Segment 2) - domain: [LONGINT] 
+i2_rcf_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 2 (RCF: Arrival Segment 2) - domain: [100…816] 
+i2_dep_3_p - planned duration (minutes) of incoming transport leg 2 (DEP: Departure Segment 3) - domain: [LONGINT] 
+i2_dep_3_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (DEP: Departure Segment 3) - domain: [LONGINT] 
+i2_dep_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 2 (DEP: Departure Segment 3) - domain: [100…816] 
+i2_rcf_3_p - planned duration (minutes) of incoming transport leg 2 (RCF: Arrival Segment 3) - domain: [LONGINT] 
+i2_rcf_3_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (RCF: Arrival Segment 3) - domain: [LONGINT] 
+i2_rcf_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 2 (RCF: Arrival Segment 3) - domain: [100…816] 
+i2_dlv_p - planned duration (minutes) of incoming transport leg 2 (DLV: Freight Delivery) - domain: [LONGINT] 
+i2_dlv_e - effective (i.e., actual) duration (minutes) of incoming transport leg 2 (DLV: Freight Delivery) - domain: [LONGINT] 
+i2_hops - number of segments (hops) in the transport leg of incoming transport leg 2 - domain: [1..4] 
+
+i3_legid - unique id across all transport legs (note: also to 'empty' legs are assigned an id) of incoming transport leg 3 - domain: [1..14664] 
+i3_rcs_p - planned duration (minutes) of incoming transport leg 3 (RCS: Freight Check in) - domain: [LONGINT] 
+i3_rcs_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (RCS: Freight Check in) - domain: [LONGINT] 
+i3_dep_1_p - planned duration (minutes) of incoming transport leg 3 (DEP: Departure Segment 1) - domain: [LONGINT] 
+i3_dep_1_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (DEP: Departure Segment 1) - domain: [LONGINT] 
+i3_dep_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 3 (DEP: Departure Segment 1) - domain: [100…816] 
+i3_rcf_1_p - planned duration (minutes) of incoming transport leg 3 (RCF: Arrival Segment 1) - domain: [LONGINT] 
+i3_rcf_1_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (RCF: Arrival Segment 1) - domain: [LONGINT] 
+i3_rcf_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 3 (RCF: Arrival Segment 1) - domain: [100…816] 
+i3_dep_2_p - planned duration (minutes) of incoming transport leg 3 (DEP: Departure Segment 2) - domain: [LONGINT] 
+i3_dep_2_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (DEP: Departure Segment 2) - domain: [LONGINT] 
+i3_dep_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 3 (DEP: Departure Segment 2) - domain: [100…816] 
+i3_rcf_2_p - planned duration (minutes) of incoming transport leg 3 (RCF: Arrival Segment 2) - domain: [LONGINT] 
+i3_rcf_2_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (RCF: Arrival Segment 2) - domain: [LONGINT] 
+i3_rcf_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 3 (RCF: Arrival Segment 2) - domain: [100…816] 
+i3_dep_3_p - planned duration (minutes) of incoming transport leg 3 (DEP: Departure Segment 3) - domain: [LONGINT] 
+i3_dep_3_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (DEP: Departure Segment 3) - domain: [LONGINT] 
+i3_dep_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 3 (DEP: Departure Segment 3) - domain: [100…816] 
+i3_rcf_3_p - planned duration (minutes) of incoming transport leg 3 (RCF: Arrival Segment 3) - domain: [LONGINT] 
+i3_rcf_3_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (RCF: Arrival Segment 3) - domain: [LONGINT] 
+i3_rcf_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of incoming transport leg 3 (RCF: Arrival Segment 3) - domain: [100…816] 
+i3_dlv_p - planned duration (minutes) of incoming transport leg 3 (DLV: Freight Delivery) - domain: [LONGINT] 
+i3_dlv_e - effective (i.e., actual) duration (minutes) of incoming transport leg 3 (DLV: Freight Delivery) - domain: [LONGINT] 
+i3_hops - number of segments (hops) in the transport leg of incoming transport leg 3 - domain: [1..4] 
+
+o_legid - unique id across all transport legs (note: also to 'empty' legs are assigned an id) of outgoing transport leg - domain: [1..14664] 
+o_rcs_p - planned duration (minutes) of outgoing transport leg (RCS: Freight Check in) - domain: [LONGINT] 
+o_rcs_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (RCS: Freight Check in) - domain: [LONGINT] 
+o_dep_1_p - planned duration (minutes) of outgoing transport leg (DEP: Departure Segment 1) - domain: [LONGINT] 
+o_dep_1_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (DEP: Departure Segment 1) - domain: [LONGINT] 
+o_dep_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of outgoing transport leg (DEP: Departure Segment 1) - domain: [100…816] 
+o_rcf_1_p - planned duration (minutes) of outgoing transport leg (RCF: Arrival Segment 1) - domain: [LONGINT] 
+o_rcf_1_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (RCF: Arrival Segment 1) - domain: [LONGINT] 
+o_rcf_1_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of outgoing transport leg (RCF: Arrival Segment 1) - domain: [100…816] 
+o_dep_2_p - planned duration (minutes) of outgoing transport leg (DEP: Departure Segment 2) - domain: [LONGINT] 
+o_dep_2_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (DEP: Departure Segment 2) - domain: [LONGINT] 
+o_dep_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of outgoing transport leg (DEP: Departure Segment 2) - domain: [100…816] 
+o_rcf_2_p - planned duration (minutes) of outgoing transport leg (RCF: Arrival Segment 2) - domain: [LONGINT] 
+o_rcf_2_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (RCF: Arrival Segment 2) - domain: [LONGINT] 
+o_rcf_2_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of outgoing transport leg (RCF: Arrival Segment 2) - domain: [100…816] 
+o_dep_3_p - planned duration (minutes) of outgoing transport leg (DEP: Departure Segment 3) - domain: [LONGINT] 
+o_dep_3_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (DEP: Departure Segment 3) - domain: [LONGINT] 
+o_dep_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of outgoing transport leg (DEP: Departure Segment 3) - domain: [100…816] 
+o_rcf_3_p - planned duration (minutes) of outgoing transport leg (RCF: Arrival Segment 3) - domain: [LONGINT] 
+o_rcf_3_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (RCF: Arrival Segment 3) - domain: [LONGINT] 
+o_rcf_3_place - unique id for airport (original IATA codes have been masked due to confidentiality reasons) of outgoing transport leg (RCF: Arrival Segment 3) - domain: [100…816] 
+o_dlv_p - planned duration (minutes) of outgoing transport leg (DLV: Freight Delivery) - domain: [LONGINT] 
+o_dlv_e - effective (i.e., actual) duration (minutes) of outgoing transport leg (DLV: Freight Delivery) - domain: [LONGINT] 
+o_hops - number of segments (hops) in the transport leg of outgoing transport leg - domain: [1..4] 
+
+legs - number of incoming transport legs of overall process - domain: [1..3] 
+
+
+Relevant Papers:
+
+A. Metzger, P. Leitner, D. Ivanovic, E. Schmieders, R. Franklin, M. Carro, S. Dustdar, and K. Pohl, “Comparing and combining predictive business process monitoring techniques,” IEEE Trans. on Systems Man Cybernetics: Systems, vol. 45, no. 2, pp. 276–290, 2015. [Web Link] 
+
+Z. Feldmann, F. Fournier, R. Franklin, and A. Metzger, “Industry article: Proactive event processing in action: A case study on the proactive management of transport processes,” in Proceedings of the Seventh ACM International Conference on Distributed Event-Based Systems, DEBS 2013, Arlington, Texas, USA, S. Chakravarthy, S. Urban, P. Pietzuch, E. Rundensteiner, and S. Dietrich, Eds. ACM, 2013, pp. 97–106. [Web Link] 
