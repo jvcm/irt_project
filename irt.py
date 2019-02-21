@@ -20,11 +20,12 @@ class IRTModel:
         return
 
     def fit(self, X_train = [], y_train = []):
+        self.y_mean = y_train.mean()
         for model in self.models:
             model.fit(X_train, y_train)
         return
 
-    def irtMatrix(self, X_test = [], y_test = []):
+    def irtMatrix(self, X_test = [], y_test = [], normalize = False):
         n = len(y_test)
         m = len(self.models)
 
@@ -37,6 +38,9 @@ class IRTModel:
         for i, model in enumerate(self.models):
             y_pred = model.predict(X_test)
             errors[i, :] = np.absolute(y_test - y_pred)
+            if normalize == True:
+                errors[i, :] = errors[i, :]/ np.absolute(y_test - self.y_mean)
+
             for j, instance in enumerate(errors[i, :]):
                 # f = 1/(1+np.exp(-instance)) # função sigmoide
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
