@@ -5,4 +5,5 @@ scikit-learn==0.20.2
 scipy==1.2.1
 seaborn==0.9.0
 jupyter==1.0.0
-
+-e git+https://github.com/blei-lab/edward.git@352596c3bc77e1cb5c01f77ac3283a53c74dbf21#egg=edward
+tensorflow==1.13.1
