@@ -79,14 +79,14 @@ def main():
     irt.irtMatrix(X_test= X_test, y_test= y_test, normalize= True)
 
     # print(irt.irt_matrix.T)
-    irt.irt_matrix.T.to_csv(path_or_buf= './beta_irt/irt_data_mpg_s79_f20_sd42.csv', index= False, encoding='utf-8')
+    irt.irt_matrix.T.to_csv(path_or_buf= 'irt_data_mpg_s79_f20_sd42.csv', index= False, encoding='utf-8')
     
     X_test = pd.DataFrame(X_test, columns= cols)
     X_test.columns = cols
     X_test['noise'] = 0
     
     print(X_test.isnull().values.any(), irt.irt_matrix.isnull().values.any())
-    X_test.to_csv('./beta_irt/xtest_mpg_s79_f20_sd42.csv', index= False, encoding='utf-8')
+    X_test.to_csv('xtest_mpg_s79_f20_sd42.csv', index= False, encoding='utf-8')
 
 if __name__ == "__main__":
     main()
