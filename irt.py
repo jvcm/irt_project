@@ -45,7 +45,7 @@ class IRTModel:
             for j, instance in enumerate(errors[i, :]):
                 # f = 1/(1+np.exp(-instance)) # função sigmoide
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
-                f = 1/(1 + instance)
+                f = np.clip(1/(1 + instance), 1e-4, 1-1e-4)
                 irt_matrix[i, j] = f
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes)
         return
@@ -56,6 +56,7 @@ def main():
     # Path of data set
     path_data = './data/'
     path_uci = './data/UCI - 45/'
+    path_out = './beta_irt/'
 
     # Name of data set
     name = 'mpg'
@@ -74,12 +75,8 @@ def main():
     len_test = len(y_test)
 
     cols = X_train.columns
-    sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.transform(X_test)
 
-    # print(len(X_test))
-
+    # Regression Models
     models = [LinearRegression(), BayesianRidge(), svm.SVR(kernel= 'linear'), svm.SVR(kernel = 'rbf'),\
          KNeighborsRegressor(), DecisionTreeRegressor(), RandomForestRegressor(),\
               AdaBoostRegressor(), MLPRegressor(), MLPRegressor(hidden_layer_sizes=(50, 50,))]
@@ -88,14 +85,14 @@ def main():
     irt.fit(X_train= X_train, y_train= y_train)
     irt.irtMatrix(X_test= X_test, y_test= y_test, normalize= True)
 
-    # print(irt.irt_matrix.T)
-    irt.irt_matrix.T.to_csv(path_or_buf= 'irt_data_' + name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+    irt.irt_matrix.T.to_csv(path_or_buf= path_out + 'irt_data_' + name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
     
-    X_test = pd.DataFrame(X_test, columns= cols)
+    # X_test = pd.DataFrame(X_test, columns= cols)
     X_test['noise'] = 0
     
     print(X_test.isnull().values.any(), irt.irt_matrix.isnull().values.any())
-    X_test.to_csv('xtest_'+ name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+    X_test.to_csv(path_out + 'xtest_'+ name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+    pd.DataFrame(y_test.index, columns=['index']).to_csv('./indexes/testIndex_'+ name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
 
 if __name__ == "__main__":
     main()
