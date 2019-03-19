@@ -26,7 +26,7 @@ class IRTModel:
             model.fit(X_train, y_train)
         return
 
-    def irtMatrix(self, X_test = [], y_test = [], normalize = False):
+    def irtMatrix(self, X_test = [], y_test = [], normalize = False, base_models = True):
         n = len(y_test)
         m = len(self.models)
 
@@ -40,14 +40,18 @@ class IRTModel:
             y_pred = model.predict(X_test)
             errors[i, :] = np.absolute(y_test - y_pred)
             if normalize == True:
-                errors[i, :] = errors[i, :]/ np.absolute(y_test - self.y_mean)
+                errors[i, :] = errors[i, :]/ np.absolute(y_test - y_test.mean())
 
             for j, instance in enumerate(errors[i, :]):
                 # f = 1/(1+np.exp(-instance)) # função sigmoide
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
                 f = np.clip(1/(1 + instance), 1e-4, 1-1e-4)
                 irt_matrix[i, j] = f
-        self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes)
+        self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes).T
+        if base_models == True:
+            self.irt_matrix['Good'] = 0.9999 + np.random.rand(len(self.irt_matrix))*0.0001
+            self.irt_matrix['Bad'] = 0.0001 + np.random.rand(len(self.irt_matrix))*0.00001
+            self.irt_matrix['Medium'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
         return
     
 def main():
@@ -83,9 +87,8 @@ def main():
 
     irt = IRTModel(models= models)
     irt.fit(X_train= X_train, y_train= y_train)
-    irt.irtMatrix(X_test= X_test, y_test= y_test, normalize= True)
-
-    irt.irt_matrix.T.to_csv(path_or_buf= path_out + 'irt_data_' + name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+    irt.irtMatrix(X_test= X_test, y_test= y_test, normalize= True, base_models= True)
+    irt.irt_matrix.to_csv(path_or_buf= path_out + 'irt_data_' + name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
     
     # X_test = pd.DataFrame(X_test, columns= cols)
     X_test['noise'] = 0
