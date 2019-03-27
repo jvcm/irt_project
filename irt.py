@@ -26,7 +26,9 @@ class IRTModel:
             model.fit(X_train, y_train)
         return
 
-    def irtMatrix(self, X_test = [], y_test = [], normalize = False, base_models = True):
+    def irtMatrix(self, X_train = [], y_train = [], X_test = [], y_test = [], normalize = False, base_models = True, name = 'dataset', rd = 42):
+        self.fit(X_train= X_train, y_train= y_train)
+        
         n = len(y_test)
         m = len(self.models)
 
@@ -48,54 +50,29 @@ class IRTModel:
                 f = np.clip(1/(1 + instance), 1e-4, 1-1e-4)
                 irt_matrix[i, j] = f
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes).T
-        if base_models == True:
-            self.irt_matrix['Good'] = 0.9999 + np.random.rand(len(self.irt_matrix))*0.0001
-            self.irt_matrix['Bad'] = 0.0001 + np.random.rand(len(self.irt_matrix))*0.00001
+        if base_models:
+            self.irt_matrix['Optimal'] = 0.9999 + np.random.rand(len(self.irt_matrix))*0.0001
             self.irt_matrix['Medium'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
+            self.irt_matrix['Worst'] = 0.0001 + np.random.rand(len(self.irt_matrix))*0.00001
+        
+        # Writing files
+        X_test_ = X_test
+        if type(X_test_) == np.ndarray:
+            X_test_ = pd.DataFrame(X_test,)
+        X_test_['noise'] = 0
+        X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+        self.irt_matrix.to_csv(path_or_buf= './beta_irt/irt_data_' + name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+        pd.DataFrame(y_test.index, columns=['index']).to_csv('./info/testIndex_'+ name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         return
-    
+
+def beta_irt(thetai, deltaj, aj):
+    p1 = ((deltaj)/(1 - deltaj))** aj
+    p2 = ((thetai)/(1 - thetai))** -aj
+    den = 1 + p1 * p2
+    return 1/den
+
 def main():
-    """Função principal da aplicação."""
-
-    # Path of data set
-    path_data = './data/'
-    path_uci = './data/UCI - 45/'
-    path_out = './beta_irt/'
-
-    # Name of data set
-    name = 'mpg'
-
-    # Read csv
-    data = pd.read_csv(path_uci + name + '.csv')
-    data = data.dropna()
-
-    X = data.iloc[:, 1:-3]
-    y = data.iloc[:, 0]
-    
-    rd = 42
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = rd)
-
-    # Number of instances
-    len_test = len(y_test)
-
-    cols = X_train.columns
-
-    # Regression Models
-    models = [LinearRegression(), BayesianRidge(), svm.SVR(kernel= 'linear'), svm.SVR(kernel = 'rbf'),\
-         KNeighborsRegressor(), DecisionTreeRegressor(), RandomForestRegressor(),\
-              AdaBoostRegressor(), MLPRegressor(), MLPRegressor(hidden_layer_sizes=(50, 50,))]
-
-    irt = IRTModel(models= models)
-    irt.fit(X_train= X_train, y_train= y_train)
-    irt.irtMatrix(X_test= X_test, y_test= y_test, normalize= True, base_models= True)
-    irt.irt_matrix.to_csv(path_or_buf= path_out + 'irt_data_' + name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
-    
-    # X_test = pd.DataFrame(X_test, columns= cols)
-    X_test['noise'] = 0
-    
-    print(X_test.isnull().values.any(), irt.irt_matrix.isnull().values.any())
-    X_test.to_csv(path_out + 'xtest_'+ name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
-    pd.DataFrame(y_test.index, columns=['index']).to_csv('./indexes/testIndex_'+ name + '_s' + str(len_test) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+    return
 
 if __name__ == "__main__":
     main()
