@@ -8,6 +8,7 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
 class IRTModel:
 
@@ -26,12 +27,15 @@ class IRTModel:
             model.fit(X_train, y_train)
         return
 
-    def irtMatrix(self, X_train = [], y_train = [], X_test = [], y_test = [], normalize = False, base_models = True, name = 'dataset', rd = 42):
-        self.fit(X_train= X_train, y_train= y_train)
-        
+    def irtMatrix(self, X_train = [], y_train = [], X_test = [], y_test = [],\
+         normalize = False, base_models = True, name = 'dataset', rd = 42):
+        # IRT matrix shape
         n = len(y_test)
         m = len(self.models)
 
+        # Fit regression models
+        self.fit(X_train= X_train, y_train= y_train)
+        
         names = list(map(lambda x: type(x).__name__, self.models))
         indexes = y_test.index.values
 
@@ -62,7 +66,6 @@ class IRTModel:
         X_test_['noise'] = 0
         X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         self.irt_matrix.to_csv(path_or_buf= './beta_irt/irt_data_' + name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
-        pd.DataFrame(y_test.index, columns=['index']).to_csv('./info/testIndex_'+ name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         return
 
 def beta_irt(thetai, deltaj, aj):
