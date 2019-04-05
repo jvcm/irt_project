@@ -27,12 +27,25 @@ class IRTModel:
             model.fit(X_train, y_train)
         return
 
-    def irtMatrix(self, X_train = [], y_train = [], X_test = [], y_test = [],\
+    def irtMatrix(self, X_train = [], y_train = [], X_test = [], y_test = [], noise_std = 0.0,\
          normalize = False, base_models = True, name = 'dataset', rd = 42):
         # IRT matrix shape
         n = len(y_test)
         m = len(self.models)
 
+        X_test_ = X_test
+        if type(X_test_) == np.ndarray:
+            X_test_ = pd.DataFrame(X_test,)
+
+        # Noise generated
+        noise_train = np.random.normal(loc=0.0, scale= noise_std, size= len(y_train))
+        noise_test = np.random.normal(loc=0.0, scale= noise_std, size= len(y_test))
+
+        # Apply noise
+        y_train = y_train + noise_train
+        y_test = y_test + noise_test
+        X_test_['noise'] = noise_test
+        
         # Fit regression models
         self.fit(X_train= X_train, y_train= y_train)
         
@@ -60,12 +73,8 @@ class IRTModel:
             self.irt_matrix['Worst'] = 0.0001 + np.random.rand(len(self.irt_matrix))*0.00001
         
         # Writing files
-        X_test_ = X_test
-        if type(X_test_) == np.ndarray:
-            X_test_ = pd.DataFrame(X_test,)
-        X_test_['noise'] = 0
-        X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
-        self.irt_matrix.to_csv(path_or_buf= './beta_irt/irt_data_' + name + '_s' + str(n) + '_f20_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+        X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+        self.irt_matrix.to_csv(path_or_buf= './beta_irt/irt_data_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         return
 
 def beta_irt(thetai, deltaj, aj):
