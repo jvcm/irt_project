@@ -68,9 +68,9 @@ class IRTModel:
                 irt_matrix[i, j] = f
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes).T
         if base_models:
-            self.irt_matrix['Optimal'] = 0.9999 + np.random.rand(len(self.irt_matrix))*0.0001
+            self.irt_matrix['Optimal'] = self.irt_matrix.apply(func = max, axis = 1)
             self.irt_matrix['Medium'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
-            self.irt_matrix['Worst'] = 0.0001 + np.random.rand(len(self.irt_matrix))*0.00001
+            self.irt_matrix['Worst'] = self.irt_matrix.apply(func = min, axis = 1)
         
         # Writing files
         X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
