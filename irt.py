@@ -55,26 +55,31 @@ class IRTModel:
         irt_matrix = np.zeros((m,n))
         errors = np.zeros((m,n))
 
+        error_df = pd.DataFrame()
+
         for i, model in enumerate(self.models):
             y_pred = model.predict(X_test)
             errors[i, :] = np.absolute(y_test - y_pred)
+            error_df[i] = errors[i, :]
             if normalize == True:
                 errors[i, :] = errors[i, :]/ np.absolute(y_test - y_test.mean())
-
+            
             for j, instance in enumerate(errors[i, :]):
                 # f = 1/(1+np.exp(-instance)) # função sigmoide
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
                 f = np.clip(1/(1 + instance), 1e-4, 1-1e-4)
                 irt_matrix[i, j] = f
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes).T
+        error_df.columns = names
         if base_models:
             self.irt_matrix['Optimal'] = self.irt_matrix.apply(func = max, axis = 1)
-            self.irt_matrix['Medium'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
+            self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
             self.irt_matrix['Worst'] = self.irt_matrix.apply(func = min, axis = 1)
         
         # Writing files
         X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         self.irt_matrix.to_csv(path_or_buf= './beta_irt/irt_data_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
+        error_df.to_csv(path_or_buf= './beta_irt/errors_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         return
 
 def beta_irt(thetai, deltaj, aj):
