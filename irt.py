@@ -27,7 +27,7 @@ class IRTModel:
             model.fit(X_train, y_train)
         return
 
-    def irtMatrix(self, X_train = [], y_train = [], X_test = [], y_test = [], noise_std = 0.0,\
+    def irtMatrix(self, X_test = [], y_test = [], noise_std = 0.0,\
          normalize = False, base_models = True, name = 'dataset', rd = 42):
         # IRT matrix shape
         n = len(y_test)
@@ -38,16 +38,16 @@ class IRTModel:
             X_test_ = pd.DataFrame(X_test,)
 
         # Noise generated
-        noise_train = np.random.normal(loc=0.0, scale= noise_std, size= len(y_train))
-        noise_test = np.random.normal(loc=0.0, scale= noise_std, size= len(y_test))
+        # noise_train = np.random.normal(loc=0.0, scale= noise_std, size= len(y_train))
+        # noise_test = np.random.normal(loc=0.0, scale= noise_std, size= len(y_test))
 
         # Apply noise
-        y_train = y_train + noise_train
-        y_test = y_test + noise_test
-        X_test_['noise'] = noise_test
+        # y_train = y_train + noise_train
+        # y_test = y_test + noise_test
+        X_test_['noise'] = 0
         
         # Fit regression models
-        self.fit(X_train= X_train, y_train= y_train)
+        # self.fit(X_train= X_train, y_train= y_train)
         
         names = list(map(lambda x: type(x).__name__, self.models))
         indexes = y_test.index.values
@@ -72,8 +72,8 @@ class IRTModel:
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes).T
         error_df.columns = names
         if base_models:
-            self.irt_matrix['Optimal'] = self.irt_matrix.apply(func = max, axis = 1)
             self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
+            self.irt_matrix['Optimal'] = self.irt_matrix.apply(func = max, axis = 1)
             self.irt_matrix['Worst'] = self.irt_matrix.apply(func = min, axis = 1)
         
         # Writing files
