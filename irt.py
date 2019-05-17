@@ -79,7 +79,7 @@ class IRTModel:
         # Writing files
         X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         self.irt_matrix.to_csv(path_or_buf= './beta_irt/irt_data_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
-        error_df.to_csv(path_or_buf= './beta_irt/errors_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.txt', index= False, encoding='utf-8')
+        error_df.to_csv(path_or_buf= './beta_irt/errors_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         return
 
 def beta_irt(thetai, deltaj, aj):
