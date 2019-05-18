@@ -1,0 +1,15 @@
+,ability
+LinearRegression,0.4828464
+BayesianRidge,0.5285984
+SVR,0.49454984
+SVR.1,0.43951732
+KNeighborsRegressor,0.52894884
+DecisionTreeRegressor,0.5160323
+RandomForestRegressor,0.5194637
+AdaBoostRegressor,0.5059882
+MLPRegressor,0.5167311
+MLPRegressor.1,0.45272633
+Average,0.5016953
+Optimal,0.60315806
+Worst,0.44853312
+stddev,0.042819418
