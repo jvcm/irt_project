@@ -101,7 +101,7 @@ for i, noise in enumerate(noise_std):
 
         # Generate Items' parameters and Respondents' abilities
         os.chdir('./beta_irt/')
-        os.system('run -i betairt_test.py irt_data_' + name_ + '.csv')
+        os.system('python betairt_test.py irt_data_' + name_ + '.csv')
         os.chdir('..')
 
         errors[i] += pd.read_csv('./beta_irt/errors_' + name_ + '.csv').iloc[:, :].values
@@ -119,7 +119,7 @@ for i, noise in enumerate(noise_std):
     if not os.path.isdir('./Results_IRT/'+ folder):
         os.system('mkdir ./Results_IRT/'+ folder)
     if not os.path.isdir(output):
-        os.system('mkdir' + output)
+        os.system('mkdir ' + output)
         
     # ABILITY
     pd.DataFrame(data= np.hstack((pd.read_csv(path + folder + 'irt_ability_vi_'+ name_ +'_am1@0_as1@0.csv').iloc[:-1, 0].values.reshape(-1,1),
