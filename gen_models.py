@@ -32,7 +32,7 @@ path_data = './data/'
 path_uci = './data/UCI - 45/'
 
 # Name of data set
-name = 'mpg'
+name = 'polynomial'
 
 # Read csv
 data = pd.read_csv(path_uci + name + '.csv')
@@ -40,21 +40,21 @@ data = data.dropna()
 
 # Parameters
 rd = 42
-noise_std = np.linspace(0, 1.6, 20)
+noise_std = np.linspace(0, 1.2, 20)
 max_std = noise_std.max()
 
 # Variable selection
-X = data.iloc[:, 1:-3].values
-y = data.iloc[:, 0]
+X = data.iloc[:, 0].values.reshape(-1,1)
+y = data.iloc[:, 1]
 
 # Split data set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = rd)
 indexes = list(y_train.index)
 
 # Principal component analysis
-pca = PCA(n_components= 1)
-X_train = pca.fit_transform(X_train)
-X_test = pca.transform(X_test)
+# pca = PCA(n_components= 1)
+# X_train = pca.fit_transform(X_train)
+# X_test = pca.transform(X_test)
 
 # Standard scale
 sc_X = StandardScaler()
@@ -85,7 +85,7 @@ responses = np.zeros((len(noise_std), len(X_test), len(models) + 3))
 abilities = np.zeros((len(models) + 3, len(noise_std)))
 params = np.zeros((len(noise_std), len(X_test), 2))
 
-rep = 5
+rep = 10
 for i, noise in enumerate(noise_std):
     for itr in range(rep):
         # Generate noise to feature in test set
@@ -138,7 +138,10 @@ for i, noise in enumerate(noise_std):
     # RESPONSES
     pd.DataFrame(data= responses[i], columns=pd.read_csv(path + folder + 'irt_ability_vi_'+ name_ +'_am1@0_as1@0.csv').iloc[:-1, 0].values).to_csv(output + 'irt_data_' + name_ + '.csv', index=False)
 
+    # X_TEST
+    pd.DataFrame(data = np.hstack((X_test_, y_test.values.reshape(-1,1))), columns= ['X_test', 'y_test']).to_csv(path_or_buf= output + 'test_'+ name_ + '.csv', index=False)
+
 #-------------------------------------Clean-Files-------------------------------------#
 
-os.system('./beta_irt/*.csv')
-os.system(path + folder + '*.csv')
+os.system('rm ./beta_irt/*.csv')
+os.system('rm ' +path + folder + '*.csv')
