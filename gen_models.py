@@ -40,7 +40,7 @@ data = data.dropna()
 
 # Parameters
 rd = 42
-noise_std = np.linspace(0, 1.2, 20)
+noise_std = np.linspace(0, 0.51, 20)
 max_std = noise_std.max()
 
 # Variable selection
@@ -85,7 +85,7 @@ responses = np.zeros((len(noise_std), len(X_test), len(models) + 3))
 abilities = np.zeros((len(models) + 3, len(noise_std)))
 params = np.zeros((len(noise_std), len(X_test), 2))
 
-rep = 10
+rep = 30
 for i, noise in enumerate(noise_std):
     for itr in range(rep):
         # Generate noise to feature in test set
