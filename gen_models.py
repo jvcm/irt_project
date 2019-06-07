@@ -23,13 +23,12 @@ from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from matplotlib import gridspec
 from sklearn.preprocessing import StandardScaler
 import edward as ed
-import os
 
 #-------------------------------------Pre-processing-------------------------------------#
 
 # Path
 path_data = './data/'
-path_uci = './data/UCI - 45/'
+path_uci = './data/SELECTED/'
 
 # Name of data set
 name = 'polynomial'
@@ -40,16 +39,16 @@ data = data.dropna()
 
 # Parameters
 rd = 42
-noise_std = np.linspace(0, 0.51, 20)
+noise_std = np.linspace(0, 0.51, 21)
 max_std = noise_std.max()
 
 # Variable selection
 X = data.iloc[:, 0].values.reshape(-1,1)
-y = data.iloc[:, 1]
+y = data.iloc[:, 1].values
 
 # Split data set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = rd)
-indexes = list(y_train.index)
+# indexes = list(y_train.index)
 
 # Principal component analysis
 # pca = PCA(n_components= 1)
@@ -60,6 +59,10 @@ indexes = list(y_train.index)
 sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
+
+sc_y = StandardScaler()
+y_train = sc_y.fit_transform(y_train.reshape(-1,1)).reshape(1,-1)[0]
+y_test = sc_y.transform(y_test.reshape(-1,1)).reshape(1,-1)[0]
 
 # Regression Models
 models = [LinearRegression(), BayesianRidge(), svm.SVR(kernel= 'linear'), svm.SVR(kernel = 'rbf', gamma= 'scale', C = 5),\
@@ -85,7 +88,7 @@ responses = np.zeros((len(noise_std), len(X_test), len(models) + 3))
 abilities = np.zeros((len(models) + 3, len(noise_std)))
 params = np.zeros((len(noise_std), len(X_test), 2))
 
-rep = 30
+rep = 40
 for i, noise in enumerate(noise_std):
     for itr in range(rep):
         # Generate noise to feature in test set
@@ -139,7 +142,7 @@ for i, noise in enumerate(noise_std):
     pd.DataFrame(data= responses[i], columns=pd.read_csv(path + folder + 'irt_ability_vi_'+ name_ +'_am1@0_as1@0.csv').iloc[:-1, 0].values).to_csv(output + 'irt_data_' + name_ + '.csv', index=False)
 
     # X_TEST
-    pd.DataFrame(data = np.hstack((X_test_, y_test.values.reshape(-1,1))), columns= ['X_test', 'y_test']).to_csv(path_or_buf= output + 'test_'+ name_ + '.csv', index=False)
+    pd.DataFrame(data = np.hstack((X_test_, y_test.reshape(-1,1))), columns= ['X_test', 'y_test']).to_csv(path_or_buf= output + 'test_'+ name_ + '.csv', index=False)
 
 #-------------------------------------Clean-Files-------------------------------------#
 

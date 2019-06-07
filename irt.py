@@ -50,7 +50,7 @@ class IRTModel:
         # self.fit(X_train= X_train, y_train= y_train)
         
         names = list(map(lambda x: type(x).__name__, self.models))
-        indexes = y_test.index.values
+#         indexes = y_test.index.values
 
         irt_matrix = np.zeros((m,n))
         errors = np.zeros((m,n))
@@ -69,7 +69,7 @@ class IRTModel:
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
                 f = np.clip(1/(1 + instance), 1e-4, 1-1e-4)
                 irt_matrix[i, j] = f
-        self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes).T
+        self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names).T
         error_df.columns = names
         if base_models:
             self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
