@@ -71,7 +71,6 @@ models = [LinearRegression(), BayesianRidge(), svm.SVR(kernel= 'linear'), svm.SV
 
 # Generate abilities/parameters for BIRT and other info.
 Irt = IRTModel(models= models)
-Irt.fit(X_train = X_train, y_train = y_train)
 
 # Edward - set seed
 ed.set_seed(rd)
@@ -92,12 +91,19 @@ rep = 40
 for i, noise in enumerate(noise_std):
     for itr in range(rep):
         # Generate noise to feature in test set
-        noise_test = np.random.normal(loc=0.0, scale= noise, size= len(X_test))
+        noise_train = np.random.normal(loc=0.0, scale= noise, size= len(y_train))
+        noise_test = np.random.normal(loc=0.0, scale= noise, size= len(y_test))
+        
+        y_train_ = y_train + noise_train
+        y_test_ = y_test + noise_test
+
         noises[:, i] += np.absolute(noise_test)
-        X_test_ = X_test + noise_test.reshape(-1,1)
+
+        # Training models
+        Irt.fit(X_train = X_train, y_train = y_train_)
 
         # Generate IRT matrix
-        Irt.irtMatrix(X_test= X_test_, y_test= y_test, noise_std = i, normalize= True, base_models= True, name= name, rd= rd)
+        Irt.irtMatrix(X_test= X_test, y_test= y_test_, noise_std = i, normalize= True, base_models= True, name= name, rd= rd)
         responses[i] += Irt.irt_matrix
 
         name_ = name + '_s' + str(len(y_test)) + '_f' + str(i) + '_sd' + str(rd)
