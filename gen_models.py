@@ -148,7 +148,7 @@ for i, noise in enumerate(noise_std):
     pd.DataFrame(data= responses[i], columns=pd.read_csv(path + folder + 'irt_ability_vi_'+ name_ +'_am1@0_as1@0.csv').iloc[:-1, 0].values).to_csv(output + 'irt_data_' + name_ + '.csv', index=False)
 
     # X_TEST
-    pd.DataFrame(data = np.hstack((X_test_, y_test.reshape(-1,1))), columns= ['X_test', 'y_test']).to_csv(path_or_buf= output + 'test_'+ name_ + '.csv', index=False)
+    pd.DataFrame(data = np.hstack((X_test, y_test_.reshape(-1,1))), columns= ['X_test', 'y_test']).to_csv(path_or_buf= output + 'test_'+ name_ + '.csv', index=False)
 
 #-------------------------------------Clean-Files-------------------------------------#
 
