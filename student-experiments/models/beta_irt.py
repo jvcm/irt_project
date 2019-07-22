@@ -77,5 +77,9 @@ class Beta_IRT:
             
             info_dict = self.inference.update(scope='global')
             self.inference.print_progress(info_dict)
+
+
+    def close(self):
+        self.inference.sess.close()
         
 

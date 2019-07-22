@@ -141,14 +141,14 @@ class Hierarchi_klqp(Inference):
           if isinstance(key, tf.Tensor) and "Placeholder" in key.op.type:
             feed_dict[key] = value
         
-        sess = ed.get_session()
+        self.sess = ed.get_session()
         
         if scope=='global':
-            _,t, loss = sess.run([self.train, self.increment_t, self.loss], feed_dict)
+            _,t, loss = self.sess.run([self.train, self.increment_t, self.loss], feed_dict)
             return {'t':t,'loss':loss}
 
         if scope=='local':
-            _,local_loss = sess.run([self.train_local,self.local_loss], feed_dict)
+            _,local_loss = self.sess.run([self.train_local,self.local_loss], feed_dict)
             return {'t':self.increment_t,'loss':local_loss}
 
     def print_progress(self, info_dict):

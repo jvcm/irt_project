@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import datetime
 import numpy as np
 import tensorflow as tf
 import edward as ed
@@ -88,6 +89,8 @@ def irt_parameters(irt_data):
     discrimination = model.qa.loc.eval()
     difficulty = tf.nn.sigmoid(model.qdelta.distribution.loc).eval()
 
+    model.close()
+
     return [ability, difficulty, discrimination]
 
 
@@ -114,7 +117,10 @@ def irt_error(irt_data, ability, difficulty, discrimination):
 def irt_mean_error(part1, part2):
     [abi1, dif1, dis1] = irt_parameters(part1)
     [abi2, dif2, dis2] = irt_parameters(part2)
-    return (irt_error(part1, abi1, dif2, dis2) + irt_error(part2, abi2, dif1, dis1)) / 2.0
+    error = (irt_error(part1, abi1, dif2, dis2) + irt_error(part2, abi2, dif1, dis1)) / 2.0
+    abi1, dif1, dis1 = None, None, None
+    abi2, dif2, dis2 = None, None, None
+    return error
 
 
 def save_full_irt_parameters(errors, grades, dataset):
@@ -137,6 +143,9 @@ def run_experiment(args):
     for method in methods.keys():
         partial.append(methods[method]['function'](part1, part2, **methods[method]['kwargs']))
 
+    part1 = None
+    part2 = None
+    
     return partial
 
 if __name__ == "__main__":
@@ -145,7 +154,7 @@ if __name__ == "__main__":
     np.random.seed(seed)
 
     n_iterations = 100
-    filenames = ['errors-2.csv', 'errors-3.csv']
+    filenames = ['errors-2.csv', 'errors-3.csv', 'errors-4.csv']
 
     methods = {
         'IRT': {'function': irt_mean_error, 'kwargs': {}},
@@ -153,7 +162,6 @@ if __name__ == "__main__":
         'FA2': {'function': fa_mean_error, 'kwargs': {'n_components': 2}}
     }
 
-    results = []
     for filename in filenames:
         print(filename)
         data = pd.read_csv(os.path.join('data', 'datasets', filename), header=0, index_col=0)
@@ -174,11 +182,8 @@ if __name__ == "__main__":
         partial['M'] = len(errors)
         partial['N'] = len(errors.columns)
 
-        results.append(partial)
-        print(partial)
         print(partial.mean())
 
+        partial.to_csv(os.path.join('results', 'results-{}.csv'.format(dataset)), index=None)
         save_full_irt_parameters(errors, data['grade'], dataset)
-
-    pd.concat(results).to_csv(os.path.join('results', 'results-all.csv'), index=None)
 
