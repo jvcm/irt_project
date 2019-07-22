@@ -117,6 +117,13 @@ def irt_mean_error(part1, part2):
     return (irt_error(part1, abi1, dif2, dis2) + irt_error(part2, abi2, dif1, dis1)) / 2.0
 
 
+def save_full_irt_parameters(errors, grades, dataset):
+    [ability, difficulty, discrimination] = irt_parameters(errors)
+
+    pd.DataFrame(data=zip(ability, grades, errors.mean(axis=1)), index=errors.index, columns=['ability', 'grade', 'mean_error']).to_csv(os.path.join('parameters', '{}-abilities.csv'.format(dataset)))
+    pd.DataFrame(data=zip(difficulty, discrimination, errors.mean(axis=0)), index=errors.columns, columns=['difficulty', 'discrimination', 'mean_error']).to_csv(os.path.join('parameters', '{}-item-parameters.csv'.format(dataset)))
+
+
 def run_experiment(args):
     (errors, methods) = args
     n = len(errors)
@@ -137,12 +144,8 @@ if __name__ == "__main__":
     ed.set_seed(seed)
     np.random.seed(seed)
 
-    filename = 'errors-2.csv'
-    errors = pd.read_csv(os.path.join('data', 'datasets', filename), header=0, index_col=0)
-    for col in errors.columns:                     
-        errors[col][errors[col] == 999] = errors[col][errors[col] < 999].max() + 1
-
     n_iterations = 100
+    filenames = ['errors-2.csv', 'errors-3.csv']
 
     methods = {
         'IRT': {'function': irt_mean_error, 'kwargs': {}},
@@ -150,14 +153,32 @@ if __name__ == "__main__":
         'FA2': {'function': fa_mean_error, 'kwargs': {'n_components': 2}}
     }
 
-    results = list(
-        futures.map(run_experiment, [(errors, methods) for _ in tqdm(range(n_iterations), total=n_iterations)])
-    )
+    results = []
+    for filename in filenames:
+        print(filename)
+        data = pd.read_csv(os.path.join('data', 'datasets', filename), header=0, index_col=0)
 
-    results = pd.DataFrame(data=results, columns=methods.keys())
+        errors = data[[col for col in data.columns if 'grade' not in col]]
+        
+        for col in errors.columns:                     
+            errors[col][errors[col] == 999] = errors[col][errors[col] < 999].max() + 1
 
-    print(results)
-    print(results.mean())
+        partial = list(
+            futures.map(run_experiment, [(errors, methods) for _ in tqdm(range(n_iterations), total=n_iterations)])
+        )
 
-    results.to_csv(os.path.join('results', 'results-2.csv'), index=None)
+        dataset = filename.split('.csv')[0]
+
+        partial = pd.DataFrame(data=partial, columns=methods.keys())
+        partial['dataset'] = dataset
+        partial['M'] = len(errors)
+        partial['N'] = len(errors.columns)
+
+        results.append(partial)
+        print(partial)
+        print(partial.mean())
+
+        save_full_irt_parameters(errors, data['grade'], dataset)
+
+    pd.concat(results).to_csv(os.path.join('results', 'results-all.csv'), index=None)
 
