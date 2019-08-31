@@ -5,6 +5,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import argparse
+
 import datetime
 import numpy as np
 import tensorflow as tf
@@ -14,6 +16,8 @@ import os
 import sys
 import re
 import time
+import warnings
+import ntpath
 
 from hsvi.Hierarchi_klqp import Hierarchi_klqp
 from models.beta_irt import Beta_IRT
@@ -37,15 +41,15 @@ def fa_mean_error(part1, part2, n_components=1):
     fa1 = FactorAnalysis(n_components=n_components)
     fa2 = FactorAnalysis(n_components=n_components)
 
-    student_factors1 = fa1.fit_transform(part1) 
-    question_factors1 = fa1.components_
-    student_factors2 = fa2.fit_transform(part2) 
-    question_factors2 = fa2.components_ 
+    question_factors1 = fa1.fit_transform(part1) 
+    student_factors1 = fa1.components_
+    question_factors2 = fa2.fit_transform(part2) 
+    student_factors2 = fa2.components_ 
 
-    rec1 = np.dot(student_factors1, question_factors2)
-    rec2 = np.dot(student_factors2, question_factors1)
-
-    return (
+    rec1 = np.dot(question_factors2, student_factors1)
+    rec2 = np.dot(question_factors1, student_factors2)
+    
+    error = (
         np.mean(
             (part1.values - rec1)**2.0
         ) + np.mean(
@@ -53,18 +57,18 @@ def fa_mean_error(part1, part2, n_components=1):
         )
     ) / 2.0
 
+    return error
 
-def irt_parameters(irt_data):
-    niter = 1000
+def irt_parameters(irt_data, n_iterations=100):
+    niter = n_iterations
 
     a_prior_mean = 1.0
     a_prior_std = 1.0
 
     # setup Beta IRT model #
 
-    M = irt_data.shape[1] #number of items
-    C = irt_data.shape[0] #number of students
-
+    M = irt_data.shape[0] #number of items
+    C = irt_data.shape[1] #number of students
 
     theta = Beta(tf.ones([C]),tf.ones([C]), sample_shape=[M], name='theta')
     delta = Beta(tf.ones([M]),tf.ones([M]), sample_shape=[C], name='delta')
@@ -73,9 +77,7 @@ def irt_parameters(irt_data):
 
     model = Beta_IRT(M,C,theta,delta,a)
 
-    avg_error = irt_data.values.mean()
-
-    irt_data_transformed = 1. / (1. + irt_data / avg_error)
+    irt_data_transformed = 1. / (1. + irt_data)
     D = np.clip(np.float32(irt_data_transformed.values), 1e-4, 1-1e-4)
 
 
@@ -95,28 +97,27 @@ def irt_parameters(irt_data):
 
 
 def irt_error(irt_data, ability, difficulty, discrimination):
-    avg_error = irt_data.values.mean()
 
     M = len(difficulty)
     C = len(ability)
 
     #repeats through columns
-    ab = np.repeat(ability.reshape(-1, 1), M, axis=1)
+    ab = np.repeat(ability.reshape(1, -1), M, axis=0)
     #repeats through lines
-    dif = np.repeat(difficulty.reshape(1, -1), C, axis=0)
-    dis = np.repeat(discrimination.reshape(1, -1), C, axis=0)
+    dif = np.repeat(difficulty.reshape(-1, 1), C, axis=1)
+    dis = np.repeat(discrimination.reshape(-1, 1), C, axis=1)
     pred = 1. / (1. + (dif / (1. - dif)) ** dis * (ab / (1. - ab)) ** -dis)
-
-    rec = avg_error * ((1. / pred) - 1.)
+    
+    rec = (1. / pred) - 1.
 
     return np.mean(
         (irt_data.values - rec)**2.0
     )
 
 
-def irt_mean_error(part1, part2):
-    [abi1, dif1, dis1] = irt_parameters(part1)
-    [abi2, dif2, dis2] = irt_parameters(part2)
+def irt_mean_error(part1, part2, n_iterations=100):
+    [abi1, dif1, dis1] = irt_parameters(part1, n_iterations=n_iterations)
+    [abi2, dif2, dis2] = irt_parameters(part2, n_iterations=n_iterations)
     error = (irt_error(part1, abi1, dif2, dis2) + irt_error(part2, abi2, dif1, dis1)) / 2.0
     abi1, dif1, dis1 = None, None, None
     abi2, dif2, dis2 = None, None, None
@@ -132,12 +133,12 @@ def save_full_irt_parameters(errors, grades, dataset):
 
 def run_experiment(args):
     (errors, methods) = args
-    n = len(errors)
+    n = errors.shape[1]
 
     idx_permutation = np.random.choice(n, n, replace=False)
-
-    part1 = errors.iloc[idx_permutation[:int(round(n/2))]] 
-    part2 = errors.iloc[idx_permutation[int(round(n/2)):]] 
+    
+    part1 = errors.iloc[:, idx_permutation[:int(round(n/2))]] 
+    part2 = errors.iloc[:, idx_permutation[int(round(n/2)):]] 
     
     partial = []
     for method in methods.keys():
@@ -148,42 +149,58 @@ def run_experiment(args):
     
     return partial
 
-if __name__ == "__main__":
-    seed=1
-    ed.set_seed(seed)
-    np.random.seed(seed)
 
-    n_iterations = 100
-    filenames = ['errors-2.csv', 'errors-3.csv', 'errors-4.csv']
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='''Runs all the experiments
+                                     with the given arguments''',
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-s', '--seed', dest='seed_num', type=int,
+                        default=42,
+                        help='Seed for the random number generator')
+    parser.add_argument('-m', '--mciterations', dest='mc_iterations', type=int,
+                        default=50,
+                        help='Number of Markov Chain iterations')
+    parser.add_argument('-i', '--irtiterations', dest='irt_iterations', type=int,
+                        default=100,
+                        help='Number of Beta-IRT iterations')
+    parser.add_argument('-d', '--dataset', dest='dataset',
+                        type=str,
+                        default='./data/datasets/normalised/stats101-1.csv',
+                        help='''Dataset path''')
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+    args = parse_arguments()
+    ed.set_seed(args.seed_num)
+    np.random.seed(args.seed_num)
+
+    n_iterations = args.mc_iterations
 
     methods = {
-        'IRT': {'function': irt_mean_error, 'kwargs': {}},
+        'IRT': {'function': irt_mean_error, 'kwargs': {'n_iterations': args.irt_iterations}},
         'FA': {'function': fa_mean_error, 'kwargs': {'n_components': 1}},
         'FA2': {'function': fa_mean_error, 'kwargs': {'n_components': 2}}
     }
 
-    for filename in filenames:
-        print(filename)
-        data = pd.read_csv(os.path.join('data', 'datasets', filename), header=0, index_col=0)
+    dataset_path = args.dataset
+    print(dataset_path)
+    
+    errors = pd.read_csv(dataset_path, header=0)
 
-        errors = data[[col for col in data.columns if 'grade' not in col]]
-        
-        for col in errors.columns:                     
-            errors[col][errors[col] == 999] = errors[col][errors[col] < 999].max() + 1
+    partial = list(
+        futures.map(run_experiment, [(errors, methods) for _ in tqdm(range(n_iterations), total=n_iterations)])
+    )
 
-        partial = list(
-            futures.map(run_experiment, [(errors, methods) for _ in tqdm(range(n_iterations), total=n_iterations)])
-        )
+    dataset = ntpath.basename(dataset_path).split('.csv')[0]
 
-        dataset = filename.split('.csv')[0]
+    partial = pd.DataFrame(data=partial, columns=methods.keys())
+    partial['dataset'] = dataset
+    partial['M'] = len(errors)
+    partial['N'] = len(errors.columns)
 
-        partial = pd.DataFrame(data=partial, columns=methods.keys())
-        partial['dataset'] = dataset
-        partial['M'] = len(errors)
-        partial['N'] = len(errors.columns)
+    print(partial.mean())
 
-        print(partial.mean())
-
-        partial.to_csv(os.path.join('results', 'results-{}.csv'.format(dataset)), index=None)
-        save_full_irt_parameters(errors, data['grade'], dataset)
+    partial.to_csv(os.path.join('results', 'results-{}.csv'.format(dataset)), index=None)
+        # save_full_irt_parameters(errors, data['grade'], dataset)
 

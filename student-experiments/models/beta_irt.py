@@ -47,8 +47,7 @@ class Beta_IRT:
         beta = ((1. - tf.transpose(self.qtheta))/(1. - self.qdelta))**self.qa
 
         # observed variable
-
-        self.x = Beta(alpha,beta)
+        self.x = Beta(tf.transpose(alpha),tf.transpose(beta))
 
 
 
@@ -77,9 +76,8 @@ class Beta_IRT:
             
             info_dict = self.inference.update(scope='global')
             self.inference.print_progress(info_dict)
-
-
-    def close(self):
-        self.inference.sess.close()
         
 
+    def close(self):
+        # tf.reset_default_graph()
+        self.inference.sess.close()
