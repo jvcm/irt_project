@@ -20,7 +20,7 @@ import warnings
 import ntpath
 
 from hsvi.Hierarchi_klqp import Hierarchi_klqp
-from models.beta_irt import Beta_IRT
+from models.gamma_irt import Gamma_IRT
 import visualization.plots as vs
 
 import matplotlib.pyplot as plt
@@ -49,6 +49,9 @@ def fa_mean_error(part1, part2, n_components=1):
     rec1 = np.dot(question_factors2, student_factors1)
     rec2 = np.dot(question_factors1, student_factors2)
     
+    # from IPython import embed
+    # embed()
+    # exit()
     error = (
         np.mean(
             (part1.values - rec1)**2.0
@@ -75,23 +78,25 @@ def irt_parameters(irt_data, n_iterations=100):
     a = Normal(tf.ones(M) * a_prior_mean,tf.ones([M]) * a_prior_std,
         sample_shape=[C], name='a')
 
-    model = Beta_IRT(M,C,theta,delta,a)
+    model = Gamma_IRT(M, C, theta, delta, a, n_iter=niter)
 
-    irt_data_transformed = 1. / (1. + irt_data)
-    D = np.clip(np.float32(irt_data_transformed.values), 1e-4, 1-1e-4)
+    # irt_data_transformed = 1. / (1. + irt_data)
+    D = np.clip(np.float32(irt_data.values), 1e-4, np.inf)
 
+    ability, difficulty, discrimination = model.fit(D)
 
-    model.init_inference(data=D,n_iter=niter)
-    model.fit()
+    while np.any(np.isnan(ability)):
+        theta = Beta(tf.ones([C]),tf.ones([C]), sample_shape=[M], name='theta')
+        delta = Beta(tf.ones([M]),tf.ones([M]), sample_shape=[C], name='delta')
+        a = Normal(tf.ones(M) * a_prior_mean,tf.ones([M]) * a_prior_std,
+            sample_shape=[C], name='a')
 
-    # output ability
-    ability = tf.nn.sigmoid(model.qtheta.distribution.loc).eval()
+        model = Gamma_IRT(M, C, theta, delta, a, n_iter=niter)
 
-    # output difficulty and discrimination
-    discrimination = model.qa.loc.eval()
-    difficulty = tf.nn.sigmoid(model.qdelta.distribution.loc).eval()
+        # irt_data_transformed = 1. / (1. + irt_data)
+        D = np.clip(np.float32(irt_data.values), 1e-4, np.inf)
 
-    model.close()
+        ability, difficulty, discrimination = model.fit(D)
 
     return [ability, difficulty, discrimination]
 
@@ -106,18 +111,24 @@ def irt_error(irt_data, ability, difficulty, discrimination):
     #repeats through lines
     dif = np.repeat(difficulty.reshape(-1, 1), C, axis=1)
     dis = np.repeat(discrimination.reshape(-1, 1), C, axis=1)
-    pred = 1. / (1. + (dif / (1. - dif)) ** dis * (ab / (1. - ab)) ** -dis)
+    pred = (dif / (1. - dif)) ** dis * (ab / (1. - ab)) ** -dis
     
-    rec = (1. / pred) - 1.
+    # rec = (1. / pred) - 1.
 
+    # from IPython import embed
+    # embed()
+    # exit()
     return np.mean(
-        (irt_data.values - rec)**2.0
+        (irt_data.values - pred)**2.0
     )
 
 
 def irt_mean_error(part1, part2, n_iterations=100):
     [abi1, dif1, dis1] = irt_parameters(part1, n_iterations=n_iterations)
     [abi2, dif2, dis2] = irt_parameters(part2, n_iterations=n_iterations)
+    # from IPython import embed
+    # embed()
+    # exit()
     error = (irt_error(part1, abi1, dif2, dis2) + irt_error(part2, abi2, dif1, dis1)) / 2.0
     abi1, dif1, dis1 = None, None, None
     abi2, dif2, dis2 = None, None, None
