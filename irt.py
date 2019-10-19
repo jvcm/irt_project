@@ -72,7 +72,8 @@ class IRTModel:
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names).T
         error_df.columns = names
         if base_models:
-            self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
+            # self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
+            self.irt_matrix['Average'] = self.irt_matrix.apply(func = np.mean, axis = 1)
             self.irt_matrix['Optimal'] = self.irt_matrix.apply(func = max, axis = 1)
             self.irt_matrix['Worst'] = self.irt_matrix.apply(func = min, axis = 1)
         

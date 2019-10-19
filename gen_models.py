@@ -31,7 +31,7 @@ path_data = './data/'
 path_uci = './data/SELECTED/'
 
 # Name of data set
-name = 'polynomial'
+name = 'sin1100'
 
 # Read csv
 data = pd.read_csv(path_uci + name + '.csv')
@@ -56,18 +56,20 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # X_test = pca.transform(X_test)
 
 # Standard scale
-sc_X = StandardScaler()
-X_train = sc_X.fit_transform(X_train)
-X_test = sc_X.transform(X_test)
+# sc_X = StandardScaler()
+# X_train = sc_X.fit_transform(X_train)
+# X_test = sc_X.transform(X_test)
 
-sc_y = StandardScaler()
-y_train = sc_y.fit_transform(y_train.reshape(-1,1)).reshape(1,-1)[0]
-y_test = sc_y.transform(y_test.reshape(-1,1)).reshape(1,-1)[0]
+# sc_y = StandardScaler()
+# y_train = sc_y.fit_transform(y_train.reshape(-1,1)).reshape(1,-1)[0]
+# y_test = sc_y.transform(y_test.reshape(-1,1)).reshape(1,-1)[0]
 
 # Regression Models
 models = [LinearRegression(), BayesianRidge(), svm.SVR(kernel= 'linear'), svm.SVR(kernel = 'rbf', gamma= 'scale', C = 5),\
      KNeighborsRegressor(), DecisionTreeRegressor(), RandomForestRegressor(),\
           AdaBoostRegressor(), MLPRegressor(max_iter=1000, solver= 'lbfgs'), MLPRegressor(hidden_layer_sizes= (50,50), solver = 'lbfgs', max_iter=500, activation='logistic')]
+
+n_synth_models = 3
 
 # Generate abilities/parameters for BIRT and other info.
 Irt = IRTModel(models= models)
@@ -83,8 +85,8 @@ folder = name + '/'
 
 noises = np.zeros((len(X_test), len(noise_std)))
 errors = np.zeros((len(noise_std), len(X_test), len(models)))
-responses = np.zeros((len(noise_std), len(X_test), len(models) + 3))
-abilities = np.zeros((len(models) + 3, len(noise_std)))
+responses = np.zeros((len(noise_std), len(X_test), len(models) + n_synth_models))
+abilities = np.zeros((len(models) + n_synth_models, len(noise_std)))
 params = np.zeros((len(noise_std), len(X_test), 2))
 
 rep = 40
