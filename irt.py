@@ -67,13 +67,15 @@ class IRTModel:
             for j, instance in enumerate(errors[i, :]):
                 # f = 1/(1+np.exp(-instance)) # função sigmoide
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
-                f = np.clip(1/(1 + instance), 1e-4, 1-1e-4)
+                f = np.clip(1/(1 + instance), 1e-16, 1-1e-16)
                 irt_matrix[i, j] = f
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names).T
         error_df.columns = names
         if base_models:
-            # self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
-            self.irt_matrix['Average'] = self.irt_matrix.apply(func = np.mean, axis = 1)
+            if normalize:
+                self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
+            else:
+                self.irt_matrix['Average'] = self.irt_matrix.apply(func = np.mean, axis = 1)
             self.irt_matrix['Optimal'] = self.irt_matrix.apply(func = max, axis = 1)
             self.irt_matrix['Worst'] = self.irt_matrix.apply(func = min, axis = 1)
         
