@@ -135,11 +135,18 @@ def irt_mean_error(part1, part2, n_iterations=100):
     return error
 
 
-def save_full_irt_parameters(errors, grades, dataset):
+def save_full_irt_parameters(errors, dataset):
     [ability, difficulty, discrimination] = irt_parameters(errors)
 
-    pd.DataFrame(data=zip(ability, grades, errors.mean(axis=1)), index=errors.index, columns=['ability', 'grade', 'mean_error']).to_csv(os.path.join('parameters', '{}-abilities.csv'.format(dataset)))
-    pd.DataFrame(data=zip(difficulty, discrimination, errors.mean(axis=0)), index=errors.columns, columns=['difficulty', 'discrimination', 'mean_error']).to_csv(os.path.join('parameters', '{}-item-parameters.csv'.format(dataset)))
+    pd.DataFrame(
+        data=zip(ability, errors.mean(axis=0)), 
+        index=errors.columns, 
+        columns=['ability', 'mean_error']
+    ).to_csv(os.path.join('parameters', '{}-abilities.csv'.format(dataset)))
+    pd.DataFrame(
+        data=zip(difficulty, discrimination, errors.mean(axis=1)), 
+        columns=['difficulty', 'discrimination', 'mean_error']
+    ).to_csv(os.path.join('parameters', '{}-item-parameters.csv'.format(dataset)))
 
 
 def run_experiment(args):
@@ -170,10 +177,13 @@ def parse_arguments():
                         help='Seed for the random number generator')
     parser.add_argument('-m', '--mciterations', dest='mc_iterations', type=int,
                         default=50,
-                        help='Number of Markov Chain iterations')
+                        help='Number of Monte Carlo iterations')
     parser.add_argument('-i', '--irtiterations', dest='irt_iterations', type=int,
                         default=100,
                         help='Number of Beta-IRT iterations')
+    parser.add_argument('-p', '--parameters', dest='only_parameters', type=bool,
+                        nargs='?', const=True, default=False,
+                        help='Tells the script it should only save the IRT parameters')
     parser.add_argument('-d', '--dataset', dest='dataset',
                         type=str,
                         default='./data/datasets/normalised/stats101-1.csv',
@@ -197,21 +207,24 @@ if __name__ == "__main__":
     dataset_path = args.dataset
     print(dataset_path)
     
-    errors = pd.read_csv(dataset_path, header=0)
-
-    partial = list(
-        futures.map(run_experiment, [(errors, methods) for _ in tqdm(range(n_iterations), total=n_iterations)])
-    )
-
     dataset = ntpath.basename(dataset_path).split('.csv')[0]
+    errors = pd.read_csv(dataset_path, header=0)
+    
+    if not args.only_parameters:
 
-    partial = pd.DataFrame(data=partial, columns=methods.keys())
-    partial['dataset'] = dataset
-    partial['M'] = len(errors)
-    partial['N'] = len(errors.columns)
+        partial = list(
+            futures.map(run_experiment, [(errors, methods) for _ in tqdm(range(n_iterations), total=n_iterations)])
+        )
 
-    print(partial.mean())
 
-    partial.to_csv(os.path.join('results', 'results-{}.csv'.format(dataset)), index=None)
-        # save_full_irt_parameters(errors, data['grade'], dataset)
+        partial = pd.DataFrame(data=partial, columns=methods.keys())
+        partial['dataset'] = dataset
+        partial['M'] = len(errors)
+        partial['N'] = len(errors.columns)
+
+        print(partial.mean())
+
+        partial.to_csv(os.path.join('results', 'results-{}.csv'.format(dataset)), index=None)
+    else:
+        save_full_irt_parameters(errors, dataset)
 
