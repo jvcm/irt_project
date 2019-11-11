@@ -27,7 +27,7 @@ class IRTModel:
             model.fit(X_train, y_train)
         return
 
-    def irtMatrix(self, X_train = [], y_train = [], X_test = [], y_test = [], noise_std = 0.0,\
+    def irtMatrix(self, X_test = [], y_test = [], noise_std = 0.0,\
          normalize = False, base_models = True, name = 'dataset', rd = 42):
         # IRT matrix shape
         n = len(y_test)
@@ -38,19 +38,19 @@ class IRTModel:
             X_test_ = pd.DataFrame(X_test,)
 
         # Noise generated
-        noise_train = np.random.normal(loc=0.0, scale= noise_std, size= len(y_train))
-        noise_test = np.random.normal(loc=0.0, scale= noise_std, size= len(y_test))
+        # noise_train = np.random.normal(loc=0.0, scale= noise_std, size= len(y_train))
+        # noise_test = np.random.normal(loc=0.0, scale= noise_std, size= len(y_test))
 
         # Apply noise
-        y_train = y_train + noise_train
-        y_test = y_test + noise_test
-        X_test_['noise'] = noise_test
+        # y_train = y_train + noise_train
+        # y_test = y_test + noise_test
+        X_test_['noise'] = 0
         
         # Fit regression models
-        self.fit(X_train= X_train, y_train= y_train)
+        # self.fit(X_train= X_train, y_train= y_train)
         
         names = list(map(lambda x: type(x).__name__, self.models))
-        indexes = y_test.index.values
+#         indexes = y_test.index.values
 
         irt_matrix = np.zeros((m,n))
         errors = np.zeros((m,n))
@@ -67,19 +67,22 @@ class IRTModel:
             for j, instance in enumerate(errors[i, :]):
                 # f = 1/(1+np.exp(-instance)) # função sigmoide
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
-                f = np.clip(1/(1 + instance), 1e-4, 1-1e-4)
+                f = np.clip(1/(1 + instance), 1e-16, 1-1e-16)
                 irt_matrix[i, j] = f
-        self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names, columns = indexes).T
+        self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names).T
         error_df.columns = names
         if base_models:
+            if normalize:
+                self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
+            else:
+                self.irt_matrix['Average'] = self.irt_matrix.apply(func = np.mean, axis = 1)
             self.irt_matrix['Optimal'] = self.irt_matrix.apply(func = max, axis = 1)
-            self.irt_matrix['Average'] = 0.5 + np.random.rand(len(self.irt_matrix))*0.0001
             self.irt_matrix['Worst'] = self.irt_matrix.apply(func = min, axis = 1)
         
         # Writing files
         X_test_.to_csv(path_or_buf= './beta_irt/xtest_'+ name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         self.irt_matrix.to_csv(path_or_buf= './beta_irt/irt_data_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
-        error_df.to_csv(path_or_buf= './beta_irt/errors_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.txt', index= False, encoding='utf-8')
+        error_df.to_csv(path_or_buf= './beta_irt/errors_' + name + '_s' + str(n) + '_f' + str(int(noise_std)) + '_sd' + str(rd) +'.csv', index= False, encoding='utf-8')
         return
 
 def beta_irt(thetai, deltaj, aj):
