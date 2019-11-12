@@ -3,11 +3,6 @@ warnings.filterwarnings('ignore')
 import os
 import pandas as pd
 import numpy as np
-import matplotlib as mpl
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
 from irt import IRTModel
 from sklearn import svm
 from sklearn.linear_model import SGDRegressor, LinearRegression, BayesianRidge, Lasso
@@ -20,9 +15,6 @@ from beta_irt.visualization.plots import newline
 from beta_irt.visualization.plots import plot_parameters
 from irt import beta_irt
 from sklearn.decomposition import PCA
-from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
-from mpl_toolkits.axes_grid1.inset_locator import mark_inset
-from matplotlib import gridspec
 from sklearn.preprocessing import StandardScaler
 import edward as ed
 import glob
@@ -68,11 +60,6 @@ for d, db in enumerate(dbs):
     if df.shape[1] > 2:
         X = df.iloc[:, :-1].values
         y = df.iloc[:, -1].values
-        
-        # Principal component analysis
-#         pca = PCA(n_components= 1)
-#         X_train = pca.fit_transform(X_train)
-#         X_test = pca.transform(X_test)
     else: 
         X = df.iloc[:, 0].values.reshape(-1,1)
         y = df.iloc[:, -1].values
@@ -112,8 +99,8 @@ for d, db in enumerate(dbs):
     abilities = np.zeros((len(models) + n_synth_models, len(noise_std)))
     params = np.zeros((len(noise_std), len(X_test), 2))
     
-    for i, noise in enumerate(noise_std):
-        
+    for i, noise in enumerate(noise_std[1:]):
+        i += 1
         name_ = name + '_s' + str(len(y_test)) + '_f' + str(i) + '_sd' + str(rd)
         
         for itr in range(rep):
@@ -130,8 +117,6 @@ for d, db in enumerate(dbs):
             Irt.irtMatrix(X_test= X_test, y_test= y_test_, noise_std = i, normalize= False, base_models= True, name= name, rd= rd)
             responses[i] += Irt.irt_matrix
 
-            
-
             # Generate Items' parameters and Respondents' abilities
             os.chdir('./beta_irt/')
             os.system('python betairt_test.py irt_data_' + name_ + '.csv')
@@ -140,7 +125,6 @@ for d, db in enumerate(dbs):
             errors[i] += pd.read_csv('./beta_irt/errors_' + name_ + '.csv').iloc[:, :].values
             abilities[:, i] += pd.read_csv(path + folder + 'irt_ability_vi_'+ name_ +'_am1@0_as1@0.csv').iloc[:-1, 1:].values.reshape(1,-1)[0]
             params[i] += pd.read_csv(path + folder + 'irt_parameters_vi_'+ name_ +'_am1@0_as1@0.csv').values
-
         responses[i] /= rep
         noises[:, i] /= rep
         errors[i] /= rep

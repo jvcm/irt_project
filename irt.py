@@ -67,7 +67,7 @@ class IRTModel:
             for j, instance in enumerate(errors[i, :]):
                 # f = 1/(1+np.exp(-instance)) # função sigmoide
                 # irt_matrix[i, j] = 2 - 2*f # caso utilize a função sigmoide
-                f = np.clip(1/(1 + instance), 1e-16, 1-1e-16)
+                f = np.clip(1/(1 + instance), 1e-7, 1-1e-7)
                 irt_matrix[i, j] = f
         self.irt_matrix = pd.DataFrame(data= irt_matrix, index= names).T
         error_df.columns = names
