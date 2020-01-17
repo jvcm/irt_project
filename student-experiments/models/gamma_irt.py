@@ -56,8 +56,11 @@ class Gamma_IRT:
 
         sess = tf.InteractiveSession()
         with sess.as_default():
-            self.inference = Hierarchi_klqp(latent_vars={self.a_prior:self.qa}, data={self.x:data}, \
-                            local_vars={self.theta_prior:self.qtheta,self.delta_prior:self.qdelta},local_data={self.x:data})
+            if isinstance(self.a_prior,ed.RandomVariable):
+                self.inference = Hierarchi_klqp(latent_vars={self.a_prior:self.qa}, data={self.x:data}, \
+                                local_vars={self.theta_prior:self.qtheta,self.delta_prior:self.qdelta},local_data={self.x:data})
+            else:      
+                self.inference = Hierarchi_klqp(latent_vars={self.theta_prior:self.qtheta,self.delta_prior:self.qdelta},data={self.x:data})
             
             self.inference.initialize(auto_transform=False,n_iter=self.n_iter,n_print=self.n_print)
 
@@ -71,7 +74,8 @@ class Gamma_IRT:
                 self.inference.print_progress(info_dict)
 
             ability = tf.nn.sigmoid(self.qtheta.distribution.loc).eval()
-            discrimination = self.qa.loc.eval()
+            if isinstance(self.a_prior,ed.RandomVariable):
+                discrimination = self.qa.loc.eval()
             difficulty = tf.nn.sigmoid(self.qdelta.distribution.loc).eval()
 
         return ability, difficulty, discrimination
