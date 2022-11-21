@@ -6,7 +6,7 @@ scipy==1.2.1
 seaborn==0.9.0
 jupyter==1.0.0
 -e git+https://github.com/blei-lab/edward.git@352596c3bc77e1cb5c01f77ac3283a53c74dbf21#egg=edward
-tensorflow==1.13.1
+tensorflow==2.9.3
 absl-py==0.7.0
 astor==0.7.1
 backcall==0.1.0
@@ -66,7 +66,7 @@ Send2Trash==1.5.0
 six==1.12.0
 sklearn==0.0
 tensorboard==1.13.1
-tensorflow==1.13.1
+tensorflow==2.9.3
 tensorflow-estimator==1.13.0
 tensorflow-probability==0.6.0
 termcolor==1.1.0
